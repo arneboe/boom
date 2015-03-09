@@ -13,23 +13,43 @@ class Bullet implements SceneObject
     position = new PVector(x, y);
     this.speed = new PVector(xVel, yVel);
     radius = 2;
-    shape = createShape(ELLIPSE, x - radius, y - radius, radius * 2.0, radius * 2.0);
+    shape = createShape(ELLIPSE, 0, 0, radius * 2.0, radius * 2.0);
     shape.setFill(color(0, 0, 0));
   }
 
   public void draw()
   {
-    shape(shape);
+    shape(shape, position.x - radius, position.y - radius);
   }
 
   public void update(final float dt)
   {
     final float ydd = g * dt;
-    final float yd = speed.y * dt;
-    final float xd = speed.x * dt;
-    
+    float yd = speed.y * dt;
+    float xd = speed.x * dt;
+       
     speed.y += ydd;
-    shape.translate(xd, -yd);//-yd because screen coordinates 0/0 is top left
+    
+    //bouncing walls
+    if(position.x + xd >= (width - 2 * radius))
+    {
+      xd = 0;
+      speed.x *= -0.8;
+      position.x = width - 2 * radius;
+    }
+    if(position.x + xd <= radius)
+    {
+      xd = 0;
+      speed.x *= -0.8;
+      position.x = radius;
+    }      
+    if(position.y - yd >= height - 2 * radius)
+    {
+      position.y = height - 2 * radius;
+      speed.y *= -0.8;
+      yd = 0;
+    }
+    
     position.x += xd;
     position.y -= yd;
   }
